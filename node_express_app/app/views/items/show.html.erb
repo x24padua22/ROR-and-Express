@@ -1,0 +1,20 @@
+<table id="show_items" class="table">
+	<thead>
+		<tr>
+			<th>user id</th>
+			<th>name</th>
+			<th>stuff</th>
+			<th>quantity</th>
+		</tr>
+	</thead>
+	<tbody>
+<% @items.each do |item| %>
+<tr>
+	<td><%= item["id"] %></td>
+	<td><%= User.find_by_id(item["user_id"]).name %></td>
+	<td><%= item["name"] %></td>
+	<td><%= item["quantity"] %></td>
+</tr>
+<% end %>
+</table>
+<div id="data"></div>

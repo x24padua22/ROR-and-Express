@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NodeExpressApp</title>
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tags %>
+  <script src='http://localhost:1212/socket.io/socket.io.js'></script>
+  	<script>
+	  	$(document).ready(function(){
+	  		var socket = io.connect('http://localhost:1212/');
+
+	  		$('#new_item').on('submit', function(){
+	  			var form = $(this);
+	  			
+		  		if(form.find('input[type="text"]').val().trim() == '')
+		  		{
+		  			form.siblings('.message').css('color','red').html("Enter a name of the stuff you want to add!")
+		  		}
+		  		else
+		  		{
+					$.post(
+						form.attr('action'),
+						form.serialize(),
+						function(data)
+						{
+							//message that indicates that a stuff has been added
+							form.siblings('.message').css('color','green').html("Successfully added!")
+							
+							//display data in the table of the stuff
+							socket.emit('submit_data', data);
+							
+							//reset the form
+							form[0].reset();
+						}
+						,"json"
+					);
+		  		}
+
+				return false;
+	  		});
+
+	  		// listens when an additional stuff has been added
+	  		socket.on('send_data', function(data){
+				$('#show_items').children('tbody').append('<tr> \
+					<td>'+ data.item.id +'</td> \
+					<td>'+ data.user +'</td> \
+					<td>'+ data.item.name +'</td> \
+					<td>'+ data.item.quantity +'</td> \
+				</tr>')
+			});	
+	  	});
+  	</script>
+  	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  	<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  	<style>
+  		#new_user, #new_sessions{
+			width: 500px;
+		}
+  		#new_user .form-group, #new_sessions .form-group{
+			display: block;
+		}
+		#new_user input[type="text"], #new_user input[type="password"],
+		#new_sessions input[type="text"], #new_sessions input[type="password"]{
+			display: inline-block;
+			width: 300px;
+		}
+		#new_item .form-group{
+			display: inline-block;
+			margin-bottom: 0px;
+		}
+		#new_item label{
+			display: inline-block;
+		}
+		#new_item select{
+			display: inline-block;
+			width: 80px;
+		}
+		#new_item input[type="text"]{
+			display: inline-block;
+			width: 300px;
+		}
+		#new_item .btn{
+			vertical-align: bottom;
+		}
+		.message{
+			font-size: 20px;
+		}
+  	</style>
+</head>
+<body>
+
+<%= yield %>
+
+</body>
+</html>
